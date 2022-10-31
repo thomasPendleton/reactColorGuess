@@ -2,63 +2,58 @@ import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 
 
-
+const generateColor = () => {
+  let color = "#"
+  const colors = {
+    10: "a",
+    11: "b",
+    12: "c",
+    13: "d",
+    14: "e",
+    15: "f",
+  }
+  for (let i = 0; i < 6; i++) {
+    const randomNumber = Math.floor(Math.random() * 16)
+    if (randomNumber > 9) {
+      color += colors[randomNumber]
+    } else {
+      color += randomNumber
+    }
+  }
+  return color
+}
 
 const Body = () => {
   const [background, setBackground] = useState("")
   const [answers, setAnswers] = useState([])
-  const [correct, setCorrect] = useState("")
-
-  const generateColor = () => {
-    let color = "#"
-    const colors = {
-      10: "a",
-      11: "b",
-      12: "c",
-      13: "d",
-      14: "e",
-      15: "f",
-    }
-    for (let i = 0; i < 6; i++) {
-      const randomNumber = Math.floor(Math.random() * 16)
-      if (randomNumber > 9) {
-        color += colors[randomNumber]
-      } else {
-        color += randomNumber
-      }
-    }
-    return color
-  }
-
-  // const buttonArray = [background, generateColor(), generateColor()].sort(
-  //   () => 0.5 - Math.random()
-  // )
+  const [isWrong, setIsWrong] = useState(false)
+  const [correct, setCorrect] = useState(false)
+  const [guess, setGuess] = useState("")
 
   const checkAnswer = (e) => {
     e.preventDefault()
     const guess = e.target.innerHTML
-    console.log(background, guess)
+    setGuess(guess)
     if (guess === background) {
-      setCorrect("correct")
+      setCorrect(true)
+      setIsWrong(false)
     } else {
-      setCorrect("incorrect")
+      setIsWrong(true)
+      setCorrect(false)
     }
   }
 
   useEffect(() => {
-    if(correct === 'incorrect') return
+    if (isWrong === true) return
     const actualColor = generateColor()
     setBackground(actualColor)
-    setAnswers([actualColor, generateColor(), generateColor()].sort(
-      () => 0.5 - Math.random()
-    ))
-    setCorrect('')
+    setAnswers(
+      [actualColor, generateColor(), generateColor()].sort(
+        () => 0.5 - Math.random()
+      )
+    )
+  }, [guess])
 
-
-  }, [correct])
-
-
-  console.log(answers)
   return (
     <Wrapper>
       <section
@@ -81,8 +76,8 @@ const Body = () => {
           )
         })}
       </section>
-      {correct === "correct" && <h4 className="result">Correct</h4>}
-      {correct === "incorrect" && <h4 className="result ">Wrong</h4>}
+      {correct && <h4 className="result">Correct</h4>}
+      {isWrong && <h4 className="result ">Wrong</h4>}
     </Wrapper>
   )
 }
